@@ -1,0 +1,39 @@
+spring:
+
+  servlet:
+
+    multipart:
+
+      max-file-size: 100MB
+
+      max-request-size: 100MB
+
+torque:
+
+  fields:
+
+    time: Device Time
+
+    rpm: Engine RPM(rpm)
+
+    speed: GPS Speed (Meters/second)
+
+    coolant: Engine Coolant Temperature(°C)
+
+    latitude: Latitude
+
+    longitude: Longitude
+
+  thresholds:
+
+    Engine Coolant Temperature(°C):
+      min: 70
+      max: 100
+      warningColor: yellow
+      dangerColor: red
+
+    Engine RPM(rpm):
+      min: 0
+      max: 8000
+      warningColor: orange
+      dangerColor: red
