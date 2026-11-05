@@ -245,7 +245,7 @@ export default function RpmSpeedCoolantChart({
                 speed:
                     Math.trunc(Number(
                         row[speedField] ?? 0
-                    ) * 3.6),
+                    )),
 
                 coolant:
                     Number(
@@ -402,27 +402,70 @@ export default function RpmSpeedCoolantChart({
           />
 
           <Tooltip
-                labelFormatter={(
-                  _,
-                  payload
-                ) => {
+              contentStyle={{
+                backgroundColor: "#111827",
+                border: "1px solid #374151",
+                color: "#ffffff"
+              }}
+              labelStyle={{
+                color: "#ffffff",
+                fontWeight: "bold"
+              }}
+              itemStyle={{
+                color: "#ffffff"
+              }}
+              labelFormatter={(_, payload) => {
 
-                  if (
-                    payload &&
-                    payload.length > 0
-                  ) {
+                if (
+                  payload &&
+                  payload.length > 0
+                ) {
 
-                    return `Timestamp: ${
-                      payload[0].payload
-                        .originalTime
-                    }`;
+                  return `Timestamp: ${
+                    payload[0].payload.originalTime
+                  }`;
 
-                  }
+                }
 
-                  return "";
+                return "";
 
-                }}
-              />
+              }}
+              formatter={(value, name) => {
+
+                if (name === "RPM") {
+
+                  return [
+                    value,
+                    "RPM"
+                  ];
+
+                }
+
+                if (name === "Velocidad") {
+
+                  return [
+                    `${Number(value).toFixed(1)} km/h`,
+                    "Velocidad"
+                  ];
+
+                }
+
+                if (name === "Coolant") {
+
+                  return [
+                    `${value} °C`,
+                    "Coolant"
+                  ];
+
+                }
+
+                return [
+                  value,
+                  name
+                ];
+
+              }}
+            />
 
           <Legend />
 

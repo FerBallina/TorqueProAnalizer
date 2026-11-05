@@ -90,25 +90,23 @@ public class TorqueLogService {
     }
 
     private ConfigDto buildConfig(
-            TorqueLog log
+            TorqueLog torqueLog
     ) {
 
         ConfigDto dto =
                 new ConfigDto();
 
-        dto.setRpmField(
-                properties.getFields().getRpm()
-        );
+        dto.setRpmField(properties.getFields().getRpm());
 
-        dto.setTimeField(properties.getFields().getTime()        );
+        dto.setTimeField(properties.getFields().getTime());
 
-        dto.setSpeedField(properties.getFields().getSpeed()        );
+        dto.setSpeedField(properties.getFields().getSpeed());
 
         dto.setCoolantField(properties.getFields().getCoolant());
 
-        dto.setLatitudeField(properties.getFields().getLatitude()        );
+        dto.setLatitudeField(properties.getFields().getLatitude());
 
-        dto.setLongitudeField(properties.getFields().getLongitude()        );
+        dto.setLongitudeField(properties.getFields().getLongitude());
 
         return dto;
 
@@ -145,12 +143,12 @@ public class TorqueLogService {
 
         }
         private void calculateElapsedSeconds(
-                TorqueLog log,
+                TorqueLog torqueLog,
                 String deviceTimeField
         ) {
 
                 if (
-                        !log.getHeaders()
+                        !torqueLog.getHeaders()
                                 .contains(deviceTimeField)
                 ) {
                         return;
@@ -159,7 +157,13 @@ public class TorqueLogService {
                 LocalDateTime first = null;
 
                 for (TorqueRecord record :
-                        log.getRecords()) {
+                        torqueLog.getRecords()) {
+
+                        if(" Device Time".equals(String.valueOf(
+                                        record.getValues()
+                                                .get(deviceTimeField)))){
+                                continue;
+                        }
 
                         String raw =
                                 String.valueOf(
@@ -167,8 +171,14 @@ public class TorqueLogService {
                                                 .get(deviceTimeField)
                                 );
 
-                        LocalDateTime current =
-                                parseDeviceTime(raw);
+                        LocalDateTime current;
+                        try{
+                                current =
+                                        parseDeviceTime(raw);
+                        }catch (Exception e){
+                                log.warn("Error parsing device time: {}", raw);
+                                throw e;
+                        }
 
                         if (first == null) {
                         first = current;
