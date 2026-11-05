@@ -74,14 +74,21 @@ public class TorqueLogService {
         response.setRecords(
                 torqueLog.getRecords()
                         .stream()
+                        .filter(r -> {
+                                Map<String, Object> recordMap = r.getValues();
+                                String gpsSpeed = (String) recordMap.get("GPS Speed (Meters/second)");
+                                return gpsSpeed != null && !"GPS Speed (Meters/second)".equals(gpsSpeed);
+                                })
                         .map(r -> {
                                 Map<String, Object> recordMap = r.getValues();
-                                double valorOriginal = Double.parseDouble((String)recordMap.get("GPS Speed (Meters/second)")); 
+                                String gpsSpeed = (String) recordMap.get("GPS Speed (Meters/second)");
+                                
+                                double valorOriginal = Double.parseDouble(gpsSpeed); 
                                 double valorCalculado = valorOriginal * 3.6;
                                 recordMap.put("GPS Speed (Meters/second)", String.valueOf(valorCalculado)); 
+                                
                                 return recordMap;
-                                }
-                        )
+                                })
                         .toList()
         );
 
