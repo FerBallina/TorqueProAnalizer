@@ -18,6 +18,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -73,7 +74,14 @@ public class TorqueLogService {
         response.setRecords(
                 torqueLog.getRecords()
                         .stream()
-                        .map(r -> r.getValues())
+                        .map(r -> {
+                                Map<String, Object> recordMap = r.getValues();
+                                double valorOriginal = Double.parseDouble((String)recordMap.get("GPS Speed (Meters/second)")); 
+                                double valorCalculado = valorOriginal * 3.6;
+                                recordMap.put("GPS Speed (Meters/second)", String.valueOf(valorCalculado)); 
+                                return recordMap;
+                                }
+                        )
                         .toList()
         );
 

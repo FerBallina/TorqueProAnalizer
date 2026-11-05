@@ -53,16 +53,16 @@ function getSpeedColor(
   speed: number
 ): string {
 
-  if (speed < 30)
+  if (speed < 40)
     return "#2196f3";
 
   if (speed < 60)
     return "#4caf50";
 
-  if (speed < 90)
+  if (speed < 80)
     return "#ffeb3b";
 
-  if (speed < 120)
+  if (speed < 100)
     return "#ff9800";
 
   return "#f44336";
@@ -248,23 +248,43 @@ export default function GpsMap({
       >
 
         <Chip
-          label="<30 km/h"
+          label="<40 km/h"
+          sx={{ 
+            bgcolor: getSpeedColor(30),
+            color: '#ffffff'
+          }}
         />
 
         <Chip
-          label="30-60 km/h"
+          label="40-60 km/h"
+          sx={{ 
+            bgcolor: getSpeedColor(40),
+            color: '#ffffff'
+          }}
         />
 
         <Chip
-          label="60-90 km/h"
+          label="60-80 km/h"
+          sx={{ 
+            bgcolor: getSpeedColor(60),
+            color: '#ffffff'
+          }}
         />
 
         <Chip
-          label="90-120 km/h"
+          label="80-100 km/h"
+          sx={{ 
+            bgcolor: getSpeedColor(80),
+            color: '#ffffff'
+          }}
         />
 
         <Chip
-          label="120+ km/h"
+          label="100+ km/h"
+          sx={{ 
+            bgcolor: getSpeedColor(100),
+            color: '#ffffff'
+          }}
         />
 
       </Box>
