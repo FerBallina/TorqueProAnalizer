@@ -1,20 +1,24 @@
+# Etapa 1: Construcción (Build)
 FROM maven:3.9-eclipse-temurin-21 AS build
 WORKDIR /app
+
+# Copiar la estructura completa del backend hacia el contenedor
 COPY backend/pom.xml ./backend/
 COPY backend/src ./backend/src
 
-# Compila y reempaqueta el módulo de forma limpia
-RUN mvn clean package -pl backend -am -DskipTests
+# Compilar apuntando directamente al pom.xml del backend (-f especifica el archivo de configuración)
+RUN mvn clean package -f backend/pom.xml -DskipTests
 
+# Verificación opcional del contenido del JAR
 RUN echo "--- CONTENIDO DEL JAR ---" && jar tf /app/backend/target/torque-analyzer-1.0.0.jar
 
+# Etapa 2: Imagen de ejecución (Liviana)
 FROM eclipse-temurin:21-jre
 WORKDIR /app
 
-# Copiamos el Fat JAR corregido que ahora contiene todo adentro
+# Copiar el Fat JAR generado
 COPY --from=build /app/backend/target/torque-analyzer-1.0.0.jar backend-api.jar
 
 EXPOSE 8080
 
-# Comando nativo estándar: Spring Boot sabe exactamente cómo leer el contenido de BOOT-INF
 ENTRYPOINT ["java", "-jar", "backend-api.jar"]
