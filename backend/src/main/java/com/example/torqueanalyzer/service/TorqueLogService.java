@@ -4,7 +4,6 @@ import com.example.torqueanalyzer.config.TorqueProperties;
 import com.example.torqueanalyzer.dto.*;
 import com.example.torqueanalyzer.model.TorqueLog;
 import com.example.torqueanalyzer.model.TorqueRecord;
-import com.example.torqueanalyzer.model.TorqueRecordLive;
 import com.example.torqueanalyzer.parser.TorqueCsvParser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,7 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
 import java.util.stream.IntStream;
 
 import java.time.Duration;
@@ -85,27 +83,6 @@ public class TorqueLogService {
                                         properties.getThresholds()));
                 log.info("Terminado de procesar el archivo con {} registros", torqueLog.getRecords().size());
                 return response;
-        }
-
-        public String processRealTimeData(Map<String, String> allParams) {
-
-                TorqueRecordLive torqueRecordLive = new TorqueRecordLive();
-                torqueRecordLive.setValues(allParams);
-                
-                // 1. Validar que la petición venga de Torque (opcional, validando el id 'eml')
-                if (allParams.containsKey("eml")) {
-                        log.debug(allParams.toString());
-                        // 2. Procesar los datos (Aquí mapeas los 'k...' a tus objetos de base de datos)
-                        String usuarioId = allParams.get("eml");
-                        String timestamp = allParams.get("time");
-                        String rpm = allParams.get("k4"); // Ejemplo: k4 suele ser RPM
-
-                        log.debug("Usuario: " + usuarioId + " | RPM: " + rpm + " | Tiempo: " + timestamp);
-                        // Tu lógica para guardar en base de datos va aquí...
-                }
-                // 3. RESPUESTA CRÍTICA: Torque Pro exige este String exacto para dar la subida
-                // por buena
-                return "OK!";
         }
 
         private ConfigDto buildConfig(

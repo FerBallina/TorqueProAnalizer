@@ -1,15 +1,4 @@
-spring:
-
-  servlet:
-
-    multipart:
-
-      max-file-size: 100MB
-
-      max-request-size: 100MB
-
 torqueLive:
-
   fields:
     eml : Mail
     v: Version
@@ -57,8 +46,45 @@ app:
   swagger:
     server-url: ""
 
+logging:
+  level:
+    com.example.torqueanalyzer.service.TorqueProcessorService: DEBUG
+
+#TODO esto creo que no lo necesito
 management:
   endpoints:
     web:
       exposure:
         include: loggers
+
+spring:
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+  datasource:
+    url: jdbc:postgresql://dpg-dbml67bm8hqs73apg9m0-a.oregon-postgres.render.com/torqueanalyzerdb
+    username: ${DB_USER:db_user}
+    password: ${DB_PASSWORD:db_pass}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      initialization-fail-timeout: -1 
+  security:
+    user:
+      name: ${ADMIN_USER:admin_user}
+      password: ${ADMIN_PASS:admin_pass}
+  
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: none # Crea o actualiza la tabla automáticamente si no existe
+    properties:
+      hibernate:
+        jdbc:
+          batch_size: 5          # Agrupa los inserts de 50 en 50
+        order_inserts: true       # Optimiza el ordenamiento para el batching
+
+# ⏱️ Propiedad personalizada para manejar el tiempo del proceso asíncrono
+telemetria:
+  volcado-ms: 10000 # Tiempo en milisegundos (5 segundos). Podés cambiarlo a 10000 (10s), etc.
+
