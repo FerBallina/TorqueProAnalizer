@@ -1,0 +1,20 @@
+# Ignorar dependencias locales (crucial)
+node_modules
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+
+# Ignorar carpetas de compilación locales
+build
+dist
+
+# Ignorar control de versiones y entornos
+.git
+.gitignore
+.env
+.env.local
+
+# Ignorar archivos del propio Docker o documentación
+Dockerfile
+.dockerignore
+README.md
