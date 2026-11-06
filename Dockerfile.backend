@@ -1,6 +1,7 @@
 FROM maven:3.9-eclipse-temurin-21 AS build
 WORKDIR /app
-COPY . .
+COPY backend/pom.xml ./backend/
+COPY backend/src ./backend/src
 
 # Compila y reempaqueta el módulo de forma limpia
 RUN mvn clean package -pl backend -am -DskipTests
