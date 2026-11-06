@@ -14,9 +14,9 @@ public class TorqueLog {
     private List<TorqueRecord> records =
             new ArrayList<>();
 
-    public void info(String string, int size, int size2) {
+    /*public void info(String string, int size, int size2) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'info'");
-    }
+    }*/
 
 }

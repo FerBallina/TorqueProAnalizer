@@ -8,20 +8,31 @@ spring:
 
       max-request-size: 100MB
 
+torqueLive:
+
+  fields:
+    eml : Mail
+    v: Version
+    session: Session
+    id: Id
+    time: Device Time
+    rpm: Engine RPM(rpm)
+    speed: GPS Speed (Meters/second)
+    coolant: Engine Coolant Temperature(°C)
+    kff1005: Latitude
+    kff1006: Longitude
+    kff1001: Fuel
+    kff1007: Throttle Position (%)
+
 torque:
 
   fields:
 
     time: Device Time
-
     rpm: Engine RPM(rpm)
-
     speed: GPS Speed (Meters/second)
-
     coolant: Engine Coolant Temperature(°C)
-
     latitude: Latitude
-
     longitude: Longitude
 
   thresholds:
@@ -45,3 +56,9 @@ springdoc:
 app:
   swagger:
     server-url: ""
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: loggers

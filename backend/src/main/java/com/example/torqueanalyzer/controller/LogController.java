@@ -5,12 +5,14 @@ import com.example.torqueanalyzer.service.TorqueLogService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Map;
+
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
-@RequestMapping("/api/log")
+@RequestMapping("/api")
 @RequiredArgsConstructor
 @Slf4j 
 public class LogController {
@@ -24,7 +26,7 @@ public class LogController {
     }
     
     @PostMapping(
-        value = "/upload",
+        value = "/log/upload",
         consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
         produces = MediaType.APPLICATION_JSON_VALUE
     )
@@ -35,6 +37,11 @@ public class LogController {
 
         return torqueLogService.process(file);
 
+    }
+
+    @GetMapping("/torque-live")
+    public String recibirDataTiempoReal(@RequestParam Map<String, String> allParams) {
+        return torqueLogService.processRealTimeData(allParams);
     }
 
 }

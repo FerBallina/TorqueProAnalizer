@@ -4,6 +4,7 @@ import com.example.torqueanalyzer.config.TorqueProperties;
 import com.example.torqueanalyzer.dto.*;
 import com.example.torqueanalyzer.model.TorqueLog;
 import com.example.torqueanalyzer.model.TorqueRecord;
+import com.example.torqueanalyzer.model.TorqueRecordLive;
 import com.example.torqueanalyzer.parser.TorqueCsvParser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,198 +23,163 @@ import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j 
+@Slf4j
 public class TorqueLogService {
 
-    private final TorqueCsvParser parser;
-    private final TorqueProperties properties;
-    private final EventDetectionService eventDetectionService;
+        private final TorqueCsvParser parser;
+        private final TorqueProperties properties;
+        private final EventDetectionService eventDetectionService;
 
-    public TorqueLogResponse process(
-            MultipartFile file
-    ) throws Exception {
+        public TorqueLogResponse process(
+                        MultipartFile file) throws Exception {
 
-        TorqueLog torqueLog = parser.parse(file);
+                TorqueLog torqueLog = parser.parse(file);
 
-        calculateElapsedSeconds(
-        torqueLog,
-        properties
-                .getFields()
-                .getTime()
-);
+                calculateElapsedSeconds(
+                        torqueLog,
+                        properties
+                                .getFields()
+                                .getTime());
 
-        TorqueLogResponse response =
-                new TorqueLogResponse();
-
-        ConfigDto config =
-                buildConfig(torqueLog);
-
-        response.setConfig(config);
-
-        response.setColumns(
-                IntStream
+                TorqueLogResponse response = new TorqueLogResponse();
+                ConfigDto config = buildConfig(torqueLog);
+                response.setConfig(config);
+                response.setColumns(
+                        IntStream
                         .range(
                                 0,
                                 torqueLog.getHeaders().size())
                         .mapToObj(i -> {
-
-                            ColumnDefinition col =
-                                    new ColumnDefinition();
-
-                            col.setPosition(i);
-
-                            col.setName(
-                                    torqueLog.getHeaders().get(i));
-
-                            return col;
-
+                                ColumnDefinition col = new ColumnDefinition();
+                                col.setPosition(i);
+                                col.setName(torqueLog.getHeaders().get(i));
+                                return col;
                         })
-                        .toList()
-        );
+                        .toList());
 
-        response.setRecords(
-                torqueLog.getRecords()
-                        .stream()
-                        .filter(r -> {
-                                Map<String, Object> recordMap = r.getValues();
-                                String gpsSpeed = (String) recordMap.get("GPS Speed (Meters/second)");
-                                return gpsSpeed != null && !"GPS Speed (Meters/second)".equals(gpsSpeed);
+                response.setRecords(
+                        torqueLog.getRecords()
+                                .stream()
+                                .filter(r -> {
+                                        Map<String, Object> recordMap = r.getValues();
+                                        String gpsSpeed = (String) recordMap
+                                                        .get("GPS Speed (Meters/second)");
+                                        return gpsSpeed != null && !"GPS Speed (Meters/second)"
+                                                        .equals(gpsSpeed);
                                 })
-                        .map(r -> {
-                                Map<String, Object> recordMap = r.getValues();
-                                String gpsSpeed = (String) recordMap.get("GPS Speed (Meters/second)");
-                                
-                                double valorOriginal = Double.parseDouble(gpsSpeed); 
-                                double valorCalculado = valorOriginal * 3.6;
-                                recordMap.put("GPS Speed (Meters/second)", String.valueOf(valorCalculado)); 
-                                
-                                return recordMap;
+                                .map(r -> {
+                                        Map<String, Object> recordMap = r.getValues();
+                                        String gpsSpeed = (String) recordMap
+                                                        .get("GPS Speed (Meters/second)");
+
+                                        double valorOriginal = Double.parseDouble(gpsSpeed);
+                                        double valorCalculado = valorOriginal * 3.6;
+                                        recordMap.put("GPS Speed (Meters/second)",
+                                                        String.valueOf(valorCalculado));
+                                        return recordMap;
                                 })
-                        .toList()
-        );
+                                .toList());
+                response.setEvents(
+                                eventDetectionService.detect(
+                                        torqueLog,
+                                        properties.getThresholds()));
+                log.info("Terminado de procesar el archivo con {} registros", torqueLog.getRecords().size());
+                return response;
+        }
 
-        response.setEvents(
-                eventDetectionService.detect(
-                        torqueLog,
-                        properties.getThresholds()
-                )
-        );
+        public String processRealTimeData(Map<String, String> allParams) {
 
-        log.info("Terminado de procesar el archivo con {} registros", torqueLog.getRecords().size());
-        return response;
+                TorqueRecordLive torqueRecordLive = new TorqueRecordLive();
+                torqueRecordLive.setValues(allParams);
+                
+                // 1. Validar que la petición venga de Torque (opcional, validando el id 'eml')
+                if (allParams.containsKey("eml")) {
+                        log.debug(allParams.toString());
+                        // 2. Procesar los datos (Aquí mapeas los 'k...' a tus objetos de base de datos)
+                        String usuarioId = allParams.get("eml");
+                        String timestamp = allParams.get("time");
+                        String rpm = allParams.get("k4"); // Ejemplo: k4 suele ser RPM
 
-    }
+                        log.debug("Usuario: " + usuarioId + " | RPM: " + rpm + " | Tiempo: " + timestamp);
+                        // Tu lógica para guardar en base de datos va aquí...
+                }
+                // 3. RESPUESTA CRÍTICA: Torque Pro exige este String exacto para dar la subida
+                // por buena
+                return "OK!";
+        }
 
-    private ConfigDto buildConfig(
-            TorqueLog torqueLog
-    ) {
+        private ConfigDto buildConfig(
+                        TorqueLog torqueLog) {
+                ConfigDto dto = new ConfigDto();
 
-        ConfigDto dto =
-                new ConfigDto();
+                dto.setRpmField(properties.getFields().getRpm());
+                dto.setTimeField(properties.getFields().getTime());
+                dto.setSpeedField(properties.getFields().getSpeed());
+                dto.setCoolantField(properties.getFields().getCoolant());
+                dto.setLatitudeField(properties.getFields().getLatitude());
+                dto.setLongitudeField(properties.getFields().getLongitude());
+                return dto;
+        }
 
-        dto.setRpmField(properties.getFields().getRpm());
-
-        dto.setTimeField(properties.getFields().getTime());
-
-        dto.setSpeedField(properties.getFields().getSpeed());
-
-        dto.setCoolantField(properties.getFields().getCoolant());
-
-        dto.setLatitudeField(properties.getFields().getLatitude());
-
-        dto.setLongitudeField(properties.getFields().getLongitude());
-
-        return dto;
-
-    }
-
-    private static final DateTimeFormatter DEVICE_TIME_FORMATTER =
-        DateTimeFormatter.ofPattern(
-                "dd-MMM-yyyy HH:mm:ss.SSS",
-                Locale.ENGLISH
-        );
+        private static final DateTimeFormatter DEVICE_TIME_FORMATTER = DateTimeFormatter.ofPattern(
+                        "dd-MMM-yyyy HH:mm:ss.SSS",
+                        Locale.ENGLISH);
 
         private LocalDateTime parseDeviceTime(
-        String value
-        ) {
-
-        String normalized = value
-                .replace("ene.", "Jan")
-                .replace("feb.", "Feb")
-                .replace("mar.", "Mar")
-                .replace("abr.", "Apr")
-                .replace("may.", "May")
-                .replace("jun.", "Jun")
-                .replace("jul.", "Jul")
-                .replace("ago.", "Aug")
-                .replace("sep.", "Sep")
-                .replace("oct.", "Oct")
-                .replace("nov.", "Nov")
-                .replace("dic.", "Dec");
-
-        return LocalDateTime.parse(
-                normalized,
-                DEVICE_TIME_FORMATTER
-        );
-
+                        String value) {
+                String normalized = value
+                                .replace("ene.", "Jan")
+                                .replace("feb.", "Feb")
+                                .replace("mar.", "Mar")
+                                .replace("abr.", "Apr")
+                                .replace("may.", "May")
+                                .replace("jun.", "Jun")
+                                .replace("jul.", "Jul")
+                                .replace("ago.", "Aug")
+                                .replace("sep.", "Sep")
+                                .replace("oct.", "Oct")
+                                .replace("nov.", "Nov")
+                                .replace("dic.", "Dec");
+                return LocalDateTime.parse(
+                                normalized,
+                                DEVICE_TIME_FORMATTER);
         }
-        private void calculateElapsedSeconds(
-                TorqueLog torqueLog,
-                String deviceTimeField
-        ) {
 
-                if (
-                        !torqueLog.getHeaders()
-                                .contains(deviceTimeField)
-                ) {
+        private void calculateElapsedSeconds(
+                        TorqueLog torqueLog,
+                        String deviceTimeField) {
+                if (!torqueLog.getHeaders()
+                                .contains(deviceTimeField)) {
                         return;
                 }
-
                 LocalDateTime first = null;
-
-                for (TorqueRecord record :
-                        torqueLog.getRecords()) {
-
-                        if(" Device Time".equals(String.valueOf(
-                                        record.getValues()
-                                                .get(deviceTimeField)))){
+                for (TorqueRecord record : torqueLog.getRecords()) {
+                        if (" Device Time".equals(String.valueOf(
+                                record.getValues()
+                                        .get(deviceTimeField)))) {
                                 continue;
                         }
-
-                        String raw =
-                                String.valueOf(
-                                        record.getValues()
-                                                .get(deviceTimeField)
-                                );
-
+                        String raw = String.valueOf(
+                                record.getValues()
+                                        .get(deviceTimeField));
                         LocalDateTime current;
-                        try{
-                                current =
-                                        parseDeviceTime(raw);
-                        }catch (Exception e){
+                        try {
+                                current = parseDeviceTime(raw);
+                        } catch (Exception e) {
                                 log.warn("Error parsing device time: {}", raw);
                                 throw e;
                         }
-
                         if (first == null) {
-                        first = current;
+                                first = current;
                         }
-
-                        double elapsedSeconds =
-                                Duration.between(
+                        double elapsedSeconds = Duration.between(
                                         first,
-                                        current
-                                ).toMillis() / 1000.0;
-
-                        record
+                                        current).toMillis() / 1000.0;
+                                record
                                 .getValues()
                                 .put(
                                         "elapsedSeconds",
-                                        elapsedSeconds
-                                );
-
+                                        elapsedSeconds);
                 }
-
         }
-
 }
