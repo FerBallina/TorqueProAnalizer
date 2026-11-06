@@ -23,7 +23,7 @@ export default function UploadPanel({
         component="label"
       >
 
-        Cargar CSV Torque
+        Upload CSV Torque
 
         <input
           hidden

@@ -6,8 +6,12 @@ import {
   Typography,
   CircularProgress,
   Alert,
-  Divider
+  Divider,
+  Box,
+  Button
 } from "@mui/material";
+
+import DownloadIcon from "@mui/icons-material/Download";
 
 import UploadPanel from "./components/UploadPanel";
 import RpmSpeedCoolantChart from "./components/RpmSpeedCoolantChart";
@@ -62,12 +66,60 @@ export default function App() {
             mb: 3
           }}
         >
-          Analizador de logs de Torque Pro
+          Torque Pro CVS analyzer. Upload your Torque Pro CSV file and visualize the data in charts, tables, and maps.
         </Typography>
 
-        <UploadPanel
-          onUpload={upload}
-        />
+        {/* SPLITTER */}
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            flexDirection: { xs: "column", sm: "row" },
+            gap: 2
+          }}
+        >
+          {/* UPLOAD */}
+          <Box sx={{ flexGrow: 1, width: { xs: "100%", sm: "auto" } }}>
+            <UploadPanel
+              onUpload={upload}
+            />
+          </Box>
+
+          {/* EXAMPLE */}
+          <Box sx={{ textAlign: "right", minWidth: "200px", width: { xs: "100%", sm: "auto" } }}>
+            <Button
+              variant="outlined"
+              color="primary"
+              startIcon={<DownloadIcon />}
+              href="/example.csv"
+              download="example.csv"
+              sx={{ 
+                p: 0.3,
+                fontSize: "0.7rem",
+                textTransform: "none",
+                width: { xs: "100%", sm: "auto" }
+              }}
+            >
+              Example
+            </Button>
+            
+            <Typography 
+              variant="caption" 
+              display="block" 
+              color="text.secondary"
+              sx={{ 
+                mt: 0.5, 
+                mr: { xs: 0, sm: 1 }, 
+                textAlign: { xs: "center", sm: "right" },
+                fontSize: "9px",
+                fontStyle: "italic"
+              }}
+            >
+              Don't have a log? Use our example.
+            </Typography>
+          </Box>
+        </Box>
       </Paper>
 
       {/* LOADING */}
@@ -87,7 +139,7 @@ export default function App() {
               mt: 2
             }}
           >
-            Procesando CSV...
+            Processing CSV...
           </Typography>
         </Paper>
       )}
@@ -105,12 +157,12 @@ export default function App() {
         </Alert>
       )}
 
-      {/* CONTENIDO */}
+      {/* CONTENT */}
 
       {log && (
 
         <>
-          {/* GRAFICO PRINCIPAL */}
+          {/* CHART */}
 
           <Paper
             sx={{
@@ -122,7 +174,7 @@ export default function App() {
               variant="h5"
               gutterBottom
             >
-              RPM / Velocidad / Coolant
+              RPM / Speed / Coolant
             </Typography>
 
             <RpmSpeedCoolantChart
@@ -146,7 +198,7 @@ export default function App() {
               variant="h5"
               gutterBottom
             >
-              Ruta GPS
+              GPS
             </Typography>
 
             <GpsMap
@@ -163,7 +215,7 @@ export default function App() {
             />
           </Paper>
 
-          {/* EVENTOS */}
+          {/* EVENTS */}
 
           <Paper
             sx={{
@@ -175,7 +227,7 @@ export default function App() {
               variant="h5"
               gutterBottom
             >
-              Eventos Detectados
+              Events detected
             </Typography>
 
             <EventTable
@@ -183,7 +235,7 @@ export default function App() {
             />
           </Paper>
 
-          {/* SENSORES DINAMICOS */}
+          {/* SENSORS */}
 
           <Paper
             sx={{
@@ -195,7 +247,7 @@ export default function App() {
               variant="h5"
               gutterBottom
             >
-              Sensores Dinámicos
+              Dinamic Sensors
             </Typography>
 
             <SensorSelector
@@ -226,7 +278,7 @@ export default function App() {
             />
           </Paper>
 
-          {/* DATOS CRUDOS */}
+          {/* RAW */}
 
           <Paper
             sx={{
@@ -237,7 +289,7 @@ export default function App() {
               variant="h5"
               gutterBottom
             >
-              Datos Crudos
+              RAW Data
             </Typography>
 
             <SensorDataTable
