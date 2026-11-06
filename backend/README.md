@@ -50,7 +50,7 @@ backend
     sudo lsof -i :8080
 
     mvn clean install
-    mvn spring-boot:run
+    mvn spring-boot:run -Dspring-boot.run.profiles=dev
 
     http://localhost:8080/swagger-ui.html
 

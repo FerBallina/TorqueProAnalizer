@@ -37,3 +37,11 @@ torque:
       max: 8000
       warningColor: orange
       dangerColor: red
+
+springdoc:
+  swagger-ui:
+    defaultModelsExpandDepth: -1
+
+app:
+  swagger:
+    server-url: ""

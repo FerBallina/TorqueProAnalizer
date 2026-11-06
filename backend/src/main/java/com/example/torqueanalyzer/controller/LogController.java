@@ -17,13 +17,12 @@ public class LogController {
 
     private final TorqueLogService torqueLogService;
 
-    public class TestController {
-
-    @GetMapping("/ping")
+    @GetMapping(
+        value="/ping")
     public String ping() {
         return "pong";
     }
-}
+    
     @PostMapping(
         value = "/upload",
         consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
