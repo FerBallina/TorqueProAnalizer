@@ -2,6 +2,9 @@ package com.example.torqueanalyzer.service;
 
 import com.example.torqueanalyzer.model.TorqueTelemetry;
 import com.example.torqueanalyzer.repository.TorqueTelemetryRepository;
+
+import lombok.extern.slf4j.Slf4j;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -28,14 +31,15 @@ duracion de la cola de buffer es configurable mediante la propiedad "telemetria.
  * usa TorqueTelemetryRepository que extiende de JpaRepository clase encargada de guardar en postgres
  */
 @Service
-public class TorqueProcessorService {
+@Slf4j
+public class TorqueODB2ProcessorService {
 
-    private static final Logger log = LoggerFactory.getLogger(TorqueProcessorService.class);
+    //private static final Logger log = LoggerFactory.getLogger(TorqueODB2ProcessorService.class);
     private final TorqueTelemetryRepository repository;
 
     private final Queue<TorqueTelemetry> bufferCola = new ConcurrentLinkedQueue<>();
 
-    public TorqueProcessorService(TorqueTelemetryRepository repository) {
+    public TorqueODB2ProcessorService(TorqueTelemetryRepository repository) {
         this.repository = repository;
     }
 

@@ -46,10 +46,6 @@ app:
   swagger:
     server-url: ""
 
-logging:
-  level:
-    com.example.torqueanalyzer.service.TorqueProcessorService: DEBUG
-
 #TODO esto creo que no lo necesito
 management:
   endpoints:

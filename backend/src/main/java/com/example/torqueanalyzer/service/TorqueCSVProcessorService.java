@@ -29,7 +29,7 @@ import java.util.Map;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class TorqueLogService {
+public class TorqueCSVProcessorService {
 
         private final TorqueCsvParser parser;
         private final TorqueProperties properties;

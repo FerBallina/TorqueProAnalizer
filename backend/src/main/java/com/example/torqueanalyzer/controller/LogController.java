@@ -1,8 +1,9 @@
 package com.example.torqueanalyzer.controller;
 
 import com.example.torqueanalyzer.dto.TorqueLogResponse;
-import com.example.torqueanalyzer.service.TorqueLogService;
-import com.example.torqueanalyzer.service.TorqueProcessorService;
+import com.example.torqueanalyzer.service.TorqueCSVProcessorService;
+import com.example.torqueanalyzer.service.TorqueDBProcessorService;
+import com.example.torqueanalyzer.service.TorqueODB2ProcessorService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirements;
@@ -12,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.Map;
 
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -28,14 +30,16 @@ import org.springframework.web.multipart.MultipartFile;
 @Slf4j 
 public class LogController {
 
-    private final TorqueLogService torqueLogService;
-    private final TorqueProcessorService torqueProcessorService;
+    private final TorqueCSVProcessorService torqueCSVProcessorService;
+    private final TorqueODB2ProcessorService torqueODB2ProcessorService;
+    private final TorqueDBProcessorService torqueDBProcessorService;
 
     @Operation(summary = "Test Ping", description = "es para testear si el backend esta activo")
     @GetMapping(
         value="/log/ping")
     @SecurityRequirements
     public String ping() {
+        log.debug("Ping endpoint reached");
         return "pong";
     }
 
@@ -43,8 +47,9 @@ public class LogController {
     @GetMapping(
         value="/log/liveData")
     @SecurityRequirements
-    public String liveData(String id) {
-        return "search in query";
+    public ResponseEntity<TorqueLogResponse> liveData(@RequestParam("id") String id) {
+        System.out.println("liveData endpoint reached with id: " + id);
+        return torqueDBProcessorService.getData(id);
     }
     
     @Operation(summary = "Upload CSV", description = "recibe la data de un file y la procesa")
@@ -58,14 +63,14 @@ public class LogController {
             @RequestParam("file")
             MultipartFile file
     ) throws Exception {
-        return torqueLogService.process(file);
+        return torqueCSVProcessorService.process(file);
     }
 
     @Operation(summary = "Live ODB2 data", description = "recibe en vivo la data desde el odb2")
     @GetMapping("/log/torque-live")
     @SecurityRequirements
     public String recibirDataTiempoReal(@RequestParam Map<String, String> allParams) {
-        return torqueProcessorService.processRealTimeData(allParams);
+        return torqueODB2ProcessorService.processRealTimeData(allParams);
     }
 
 }

@@ -8,10 +8,12 @@ import {
   Alert,
   Divider,
   Box,
-  Button
+  Button,
+  TextField
 } from "@mui/material";
 
 import DownloadIcon from "@mui/icons-material/Download";
+import SendIcon from "@mui/icons-material/Send";
 
 import UploadPanel from "./components/UploadPanel";
 import RpmSpeedCoolantChart from "./components/RpmSpeedCoolantChart";
@@ -29,13 +31,38 @@ export default function App() {
     loading,
     error,
     log,
-    upload
+    upload,
+    loadById
   } = useTorqueLog();
 
   const [
     selectedSensors,
     setSelectedSensors
   ] = useState<string[]>([]);
+
+  const [
+    idInput,
+    setIdInput
+  ] = useState<string>("");
+
+  // Estado para el mensaje de carga dinámico
+  const [
+    loadingMessage,
+    setLoadingMessage
+  ] = useState<string>("Processing CSV...");
+
+  // Manejador para el botón de enviar ID
+  const handleSendId = () => {
+    if (!idInput.trim()) return;
+    setLoadingMessage("Loading data...");
+    loadById(idInput.trim());
+  };
+
+  // Manejador para cuando se sube un archivo
+  const handleFileUpload = (file: File) => {
+    setLoadingMessage("Processing CSV...");
+    upload(file);
+  };
 
   return (
     <Container
@@ -79,11 +106,51 @@ export default function App() {
             gap: 2
           }}
         >
-          {/* UPLOAD */}
-          <Box sx={{ flexGrow: 1, width: { xs: "100%", sm: "auto" } }}>
-            <UploadPanel
-              onUpload={upload}
-            />
+          {/* UPLOAD & TEXTBOX */}
+          <Box 
+            sx={{ 
+              flexGrow: 1, 
+              width: { xs: "100%", sm: "auto" },
+              display: "flex",
+              alignItems: "center",
+              flexDirection: { xs: "column", md: "row" },
+              gap: 2 
+            }}
+          >
+            <Box sx={{ width: { xs: "100%", md: "auto" } }}>
+              <UploadPanel
+                onUpload={handleFileUpload}
+              />
+            </Box>
+
+            <Box 
+              sx={{ 
+                display: "flex", 
+                alignItems: "center", 
+                gap: 1,
+                width: { xs: "100%", md: "auto" }
+              }}
+            >
+              <TextField
+                label="Log ID"
+                variant="outlined"
+                size="small"
+                value={idInput}
+                onChange={(e) => setIdInput(e.target.value)}
+                disabled={loading}
+                sx={{ minWidth: "150px", flexGrow: { xs: 1, md: 0 } }}
+              />
+              <Button
+                variant="contained"
+                color="secondary"
+                endIcon={<SendIcon />}
+                onClick={handleSendId}
+                disabled={!idInput.trim() || loading}
+                sx={{ height: "40px", textTransform: "none" }}
+              >
+                Enviar
+              </Button>
+            </Box>
           </Box>
 
           {/* EXAMPLE */}
@@ -139,7 +206,7 @@ export default function App() {
               mt: 2
             }}
           >
-            Processing CSV...
+            {loadingMessage}
           </Typography>
         </Paper>
       )}
