@@ -5,9 +5,16 @@ import ch.qos.logback.classic.LoggerContext;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * Controlador de administración de niveles de logging del backend.
+ *
+ * Permite cambiar dinámicamente el nivel de logs de un paquete concreto usando
+ * Logback. Es útil para diagnóstico en producción o durante pruebas sin reiniciar
+ * la aplicación.
+ */
 @RestController
 @RequestMapping("/api/admin/logs")
-public class LoggingController {
+public class LoggingLevelController {
 
     @PostMapping("/level")
     public String changeLogLevel(@RequestParam String packagePath, @RequestParam String level) {

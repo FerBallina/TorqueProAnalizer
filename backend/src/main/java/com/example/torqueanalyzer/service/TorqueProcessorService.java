@@ -16,8 +16,17 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 /*
 clase para generar la telemetria de torque y guardarla en la base de datos.
 posee un buffer de tipo cola para almacenar los registros de telemetría antes de guardarlos en la base de datos.
-duracion de la cola de buffer es configurable mediante la propiedad "telemetria.volcado-ms" en el archivo de configuración de la aplicación.
+duracion de la cola de buffer es configurable mediante la propiedad "telemetria.volcado-ms" en el archivo de configuración YAML de la aplicación.
 */
+/**
+ * Servicio de procesamiento en tiempo real para telemetría del vehículo.
+ *
+ * Recibe datos en vivo desde el dispositivo, los encola en memoria y luego los
+ * vuelca periódicamente a PostgreSQL usando un `@Scheduled`. La cola evita perder
+ * mensajes si la base de datos está momentáneamente caída.
+ * 
+ * usa TorqueTelemetryRepository que extiende de JpaRepository clase encargada de guardar en postgres
+ */
 @Service
 public class TorqueProcessorService {
 

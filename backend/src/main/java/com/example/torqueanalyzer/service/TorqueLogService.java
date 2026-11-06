@@ -19,6 +19,13 @@ import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import java.util.Map;
 
+/**
+ * Servicio central del procesamiento del archivo de logs.
+ *
+ * Toma el CSV cargado, lo parsea, calcula tiempos relativos, arma la respuesta
+ * de configuración y devuelve rows/columnas/eventos listos para el frontend.
+ * Además coordina con `EventDetectionService` para identificar anomalías.
+ */
 @Service
 @RequiredArgsConstructor
 @Slf4j

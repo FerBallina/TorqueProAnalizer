@@ -9,6 +9,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Servicio encargado de detectar eventos, alertas o anomalías dentro del log.
+ *
+ * Recibe el `TorqueLog` y los thresholds configurados para evaluar cada sensor.
+ * En el futuro puede devolver una lista de eventos con severidad, fila y valor
+ * asociado para renderizar alertas o métricas al cliente.
+ */
 @Service
 public class EventDetectionService {
 

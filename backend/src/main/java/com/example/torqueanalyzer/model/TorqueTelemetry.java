@@ -5,6 +5,13 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 import java.util.Map;
 
+/**
+ * Entidad JPA que persiste la telemetría recibida por el backend.
+ *
+ * Guarda el email del usuario, la sesión, el timestamp del dispositivo y un JSON
+ * con todos los parámetros recibidos. Sirve como almacenamiento de la información
+ * en PostgreSQL para posteriores análisis o auditoría.
+ */
 @Entity
 @Table(name = "torque_telemetry")
 public class TorqueTelemetry {

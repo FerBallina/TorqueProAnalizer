@@ -7,8 +7,15 @@ import org.springframework.beans.factory.annotation.Value;
 
 import com.example.torqueanalyzer.security.JwtService;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 
+/**
+ * Controlador de autenticación para la API.
+ *
+ * Expone el endpoint de login para validar usuario y contraseña y devolver
+ * un JWT con el rol del usuario autenticado.
+ */
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
@@ -25,6 +32,7 @@ public class AuthController {
         this.jwtService = jwtService;
     }
 
+    @Operation(summary = "User login", description = "Valida credenciales y devuelve un JWT")
     @PostMapping("/login")
     @SecurityRequirements
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
@@ -46,6 +54,12 @@ class LoginRequest {
     public void setPassword(String password) { this.password = password; }
 }
 
+/**
+ * DTO de respuesta del login con el token JWT generado.
+ *
+ * Se devuelve al cliente una vez que las credenciales son válidas para que pueda
+ * incluirlo en futuras request autenticadas.
+ */
 class AuthResponse {
     private String token;
     public AuthResponse(String token) { this.token = token; }

@@ -11,6 +11,14 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
+/**
+ * Componente que parsea archivos CSV de telemetría y los transforma en objetos
+ * `TorqueLog`.
+ *
+ * Lee el contenido del archivo, identifica los encabezados y crea una estructura
+ * de registros en memoria para que luego los servicios puedan procesarlos. También
+ * registra el total de columnas y filas cargadas para facilitar depuración.
+ */
 @Component
 @Slf4j
 public class TorqueCsvParser {

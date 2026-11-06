@@ -13,10 +13,18 @@ import org.springframework.context.annotation.Configuration;
 import io.swagger.v3.oas.models.servers.Server;
 import java.util.List;
 
+/**
+ * Configuración de la documentación OpenAPI/Swagger para la API.
+ *
+ * Define la información general de la API, la seguridad JWT y la URL del servidor
+ * personalizada (`app.swagger.server-url`), que puede apuntar al host real del
+ * despliegue. Esto permite que Swagger genere correctamente los ejemplos y los
+ * endpoints a usar desde el entorno correcto.
+ */
 @Configuration
 public class OpenApiConfig {
 
-        @Value("${app.swagger.server-url:}")
+    @Value("${app.swagger.server-url:}")
     private String customServerUrl;
 
     @Bean

@@ -9,6 +9,13 @@ import java.security.Key;
 import java.util.Date;
 import java.util.function.Function;
 
+/**
+ * Servicio responsable de generar, validar y extraer claims del JWT.
+ *
+ * Se usa para emitir tokens de sesión al hacer login y para verificar que un
+ * usuario autenticado conserva permisos válidos antes de acceder a endpoints
+ * protegidos. Además guarda el rol del usuario dentro del token.
+ */
 @Service
 public class JwtService {
 
