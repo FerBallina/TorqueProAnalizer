@@ -9,11 +9,18 @@ import {
   Divider,
   Box,
   Button,
-  TextField
+  TextField,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow
 } from "@mui/material";
 
 import DownloadIcon from "@mui/icons-material/Download";
-import SendIcon from "@mui/icons-material/Send";
+import SearchIcon from "@mui/icons-material/Search";
+import CloudQueueIcon from "@mui/icons-material/CloudQueue";
 
 import UploadPanel from "./components/UploadPanel";
 import RpmSpeedCoolantChart from "./components/RpmSpeedCoolantChart";
@@ -23,7 +30,7 @@ import SensorSelector from "./components/SensorSelector";
 import DynamicSensorChart from "./components/DynamicSensorChart";
 import SensorDataTable from "./components/SensorDataTable";
 
-import { useTorqueLog } from "./hooks/useTorqueLog";
+import { useTorqueLog, SessionHistoryItem } from "./hooks/useTorqueLog";
 
 export default function App() {
 
@@ -31,8 +38,10 @@ export default function App() {
     loading,
     error,
     log,
+    history,
     upload,
-    loadById
+    loadById,
+    loadHistory
   } = useTorqueLog();
 
   const [
@@ -40,26 +49,37 @@ export default function App() {
     setSelectedSensors
   ] = useState<string[]>([]);
 
-  const [
-    idInput,
-    setIdInput
-  ] = useState<string>("");
+  // Estados para el formulario de búsqueda histórica
+  const [emailInput, setEmailInput] = useState<string>("");
+  const [fromDate, setFromDate] = useState<string>("");
+  const [toDate, setToDate] = useState<string>("");
 
-  // Estado para el mensaje de carga dinámico
+  // Estado para controlar qué fila de la tabla está seleccionada
+  const [selectedSessionId, setSelectedSessionId] = useState<string | null>(null);
+
   const [
     loadingMessage,
     setLoadingMessage
   ] = useState<string>("Processing CSV...");
 
-  // Manejador para el botón de enviar ID
-  const handleSendId = () => {
-    if (!idInput.trim()) return;
-    setLoadingMessage("Loading data...");
-    loadById(idInput.trim());
+  // Manejador para buscar el historial de sesiones
+  const handleSearchHistory = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!emailInput.trim() || !fromDate || !toDate) return;
+    setLoadingMessage("Searching sessions...");
+    loadHistory(emailInput.trim(), fromDate, toDate);
   };
 
-  // Manejador para cuando se sube un archivo
+  // Manejador al hacer click en una sesión de la lista
+  const handleSelectSession = (session: SessionHistoryItem) => {
+    setSelectedSessionId(session.sessionId);
+    setLoadingMessage("Loading session data...");
+    loadById(session.sessionId);
+  };
+
+  // Manejador para cuando se sube un archivo CSV manual
   const handleFileUpload = (file: File) => {
+    setSelectedSessionId(null); // Reseteamos la selección de DB si sube un CSV
     setLoadingMessage("Processing CSV...");
     upload(file);
   };
@@ -72,8 +92,7 @@ export default function App() {
         mb: 3
       }}
     >
-      {/* HEADER */}
-
+      {/* HEADER & CONTROLES */}
       <Paper
         sx={{
           p: 3,
@@ -93,104 +112,179 @@ export default function App() {
             mb: 3
           }}
         >
-          Torque Pro CVS analyzer. Upload your Torque Pro CSV file and visualize the data in charts, tables, and maps.
+          Torque Pro CSV analyzer. Upload your Torque Pro CSV file or search live database entries by your account info.
         </Typography>
 
-        {/* SPLITTER */}
+        <Divider sx={{ mb: 3 }} />
+
+        {/* CONTENEDOR DE ENTRADAS (HISTORIAL + ARCHIVO) */}
         <Box
           sx={{
             display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            flexDirection: { xs: "column", sm: "row" },
-            gap: 2
+            flexDirection: "column",
+            gap: 3
           }}
         >
-          {/* UPLOAD & TEXTBOX */}
-          <Box 
-            sx={{ 
-              flexGrow: 1, 
-              width: { xs: "100%", sm: "auto" },
-              display: "flex",
-              alignItems: "center",
-              flexDirection: { xs: "column", md: "row" },
-              gap: 2 
-            }}
-          >
-            <Box sx={{ width: { xs: "100%", md: "auto" } }}>
-              <UploadPanel
-                onUpload={handleFileUpload}
-              />
-            </Box>
-
-            <Box 
-              sx={{ 
-                display: "flex", 
-                alignItems: "center", 
-                gap: 1,
-                width: { xs: "100%", md: "auto" }
+          {/* SECCIÓN 1: FORMULARIO HISTORIAL DE SESIONES */}
+          <Box component="form" onSubmit={handleSearchHistory}>
+            <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1, fontWeight: "bold" }}>
+              SEARCH REMOTE DATABASE SESSIONS
+            </Typography>
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: { xs: "column", md: "row" },
+                gap: 2,
+                alignItems: "flex-end"
               }}
             >
               <TextField
-                label="Log ID"
+                label="Account Email"
                 variant="outlined"
                 size="small"
-                value={idInput}
-                onChange={(e) => setIdInput(e.target.value)}
+                type="email"
+                required
+                value={emailInput}
+                onChange={(e) => setEmailInput(e.target.value)}
                 disabled={loading}
-                sx={{ minWidth: "150px", flexGrow: { xs: 1, md: 0 } }}
+                sx={{ flexGrow: 1, width: "40%" }}
+              />
+              <TextField
+                label="From Date"
+                variant="outlined"
+                size="small"
+                type="date"
+                required
+                InputLabelProps={{ shrink: true }}
+                value={fromDate}
+                onChange={(e) => setFromDate(e.target.value)}
+                disabled={loading}
+                sx={{ width: { xs: "100%", md: "200px" } }}
+              />
+              <TextField
+                label="To Date"
+                variant="outlined"
+                size="small"
+                type="date"
+                required
+                InputLabelProps={{ shrink: true }}
+                value={toDate}
+                onChange={(e) => setToDate(e.target.value)}
+                disabled={loading}
+                sx={{ width: { xs: "100%", md: "200px" } }}
               />
               <Button
                 variant="contained"
-                color="secondary"
-                endIcon={<SendIcon />}
-                onClick={handleSendId}
-                disabled={!idInput.trim() || loading}
-                sx={{ height: "40px", textTransform: "none" }}
+                color="primary"
+                type="submit"
+                startIcon={<SearchIcon />}
+                disabled={loading || !emailInput.trim() || !fromDate || !toDate}
+                sx={{ height: "40px", textTransform: "none", width: { xs: "100%", md: "auto" } }}
               >
-                Enviar
+                Search Sessions
               </Button>
             </Box>
           </Box>
 
-          {/* EXAMPLE */}
-          <Box sx={{ textAlign: "right", minWidth: "200px", width: { xs: "100%", sm: "auto" } }}>
-            <Button
-              variant="outlined"
-              color="primary"
-              startIcon={<DownloadIcon />}
-              href="/example.csv"
-              download="example.csv"
-              sx={{ 
-                p: 0.3,
-                fontSize: "0.7rem",
-                textTransform: "none",
-                width: { xs: "100%", sm: "auto" }
-              }}
-            >
-              Example
-            </Button>
-            
-            <Typography 
-              variant="caption" 
-              display="block" 
-              color="text.secondary"
-              sx={{ 
-                mt: 0.5, 
-                mr: { xs: 0, sm: 1 }, 
-                textAlign: { xs: "center", sm: "right" },
-                fontSize: "9px",
-                fontStyle: "italic"
-              }}
-            >
-              Don't have a log? Use our example.
-            </Typography>
+          <Divider />
+
+          {/* SECCIÓN 2: SUBIDA MANUAL & EJEMPLO */}
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              flexDirection: { xs: "column", sm: "row" },
+              gap: 2
+            }}
+          >
+            <Box sx={{ flexGrow: 1, width: { xs: "100%", sm: "auto" } }}>
+              <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1, fontWeight: "bold" }}>
+                OR UPLOAD LOCAL CSV LOG
+              </Typography>
+              <UploadPanel onUpload={handleFileUpload} />
+            </Box>
+
+            <Box sx={{ textAlign: "right", minWidth: "200px", width: { xs: "100%", sm: "auto" }, mt: { xs: 1, sm: 3 } }}>
+              <Button
+                variant="outlined"
+                color="primary"
+                startIcon={<DownloadIcon />}
+                href="/example.csv"
+                download="example.csv"
+                sx={{ 
+                  p: 0.3,
+                  fontSize: "0.7rem",
+                  textTransform: "none",
+                  width: { xs: "100%", sm: "auto" }
+                }}
+              >
+                Example
+              </Button>
+              <Typography 
+                variant="caption" 
+                display="block" 
+                color="text.secondary"
+                sx={{ 
+                  mt: 0.5, 
+                  mr: { xs: 0, sm: 1 }, 
+                  textAlign: { xs: "center", sm: "right" },
+                  fontSize: "9px",
+                  fontStyle: "italic"
+                }}
+              >
+                Don't have a log? Use our example.
+              </Typography>
+            </Box>
           </Box>
         </Box>
       </Paper>
 
-      {/* LOADING */}
+      {/* HISTORIAL: TABLA DE VIAJES ENCONTRADOS */}
+      {history.length > 0 && (
+        <TableContainer component={Paper} sx={{ mb: 3, maxHeight: "250px" }}>
+          <Table stickyHeader size="small">
+            <TableHead>
+              <TableRow>
+                <TableCell sx={{ fontWeight: "bold" }}>Start Time</TableCell>
+                <TableCell sx={{ fontWeight: "bold" }}>End Time</TableCell>
+                <TableCell sx={{ fontWeight: "bold" }}>Records Amount</TableCell>
+                <TableCell sx={{ fontWeight: "bold" }}>Session ID</TableCell>
+                <TableCell align="right" sx={{ fontWeight: "bold" }}>Action</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {history.map((session) => (
+                <TableRow 
+                  key={session.sessionId}
+                  hover
+                  selected={selectedSessionId === session.sessionId}
+                >
+                  <TableCell>{session.startTime}</TableCell>
+                  <TableCell>{session.endTime}</TableCell>
+                  <TableCell>{session.recordCount} pts</TableCell>
+                  <TableCell sx={{ fontStyle: "italic", fontSize: "0.8rem" }}>{session.sessionId}</TableCell>
+                  <TableCell align="right">
+                    <Button
+                      size="small"
+                      variant={selectedSessionId === session.sessionId ? "contained" : "outlined"}
+                      color="secondary"
+                      startIcon={<CloudQueueIcon />}
+                      onClick={() => handleSelectSession(session)}
+                      disabled={loading}
+                      sx={{ textTransform: "none", fontSize: "0.75rem" }}
+                    >
+                      {selectedSessionId === session.sessionId ? "Cargado" : "Visualizar"}
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      )}
 
+      {/* LOADING */}
       {loading && (
         <Paper
           sx={{
@@ -200,7 +294,6 @@ export default function App() {
           }}
         >
           <CircularProgress />
-
           <Typography
             sx={{
               mt: 2
@@ -212,7 +305,6 @@ export default function App() {
       )}
 
       {/* ERROR */}
-
       {error && (
         <Alert
           severity="error"

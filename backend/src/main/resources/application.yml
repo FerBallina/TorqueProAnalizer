@@ -5,18 +5,14 @@ torqueLive:
     session: Session
     id: Id
     time: Device Time
-    rpm: Engine RPM(rpm)
-    speed: GPS Speed (Meters/second)
-    coolant: Engine Coolant Temperature(°C)
     kff1005: Latitude
     kff1006: Longitude
     kff1001: Fuel
     kff1007: Throttle Position (%)
 
+# esta lista son los valores fijos que no me deberian faltar para poder dibujar los dos graficos principales
 torque:
-
   fields:
-
     time: Device Time
     rpm: Engine RPM(rpm)
     speed: GPS Speed (Meters/second)

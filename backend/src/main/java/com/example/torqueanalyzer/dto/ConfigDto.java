@@ -6,6 +6,7 @@ import lombok.Data;
 /**
  * DTO con la configuración de columnas y sensores que la aplicación usa para
  * interpretar los datos del vehículo.
+ * Son los valores que esperaria que no falten para poder dibujar el gps y el primer grafico
  *
  * Incluye los nombres de campos del CSV para RPM, velocidad, coolant, latitud,
  * longitud y tiempo; además guarda si el gráfico tiene autoescalado. Sirve para

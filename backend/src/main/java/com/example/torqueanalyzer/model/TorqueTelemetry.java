@@ -1,6 +1,8 @@
 package com.example.torqueanalyzer.model;
 
 import jakarta.persistence.*;
+import lombok.Data;
+
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 import java.util.Map;
@@ -14,6 +16,7 @@ import java.util.Map;
  */
 @Entity
 @Table(name = "torque_telemetry")
+@Data
 public class TorqueTelemetry {
 
     @Id
@@ -36,6 +39,4 @@ public class TorqueTelemetry {
         this.deviceTime = deviceTime;
         this.allParameters = allParameters;
     }
-
-    // TODO getters and setters
 }

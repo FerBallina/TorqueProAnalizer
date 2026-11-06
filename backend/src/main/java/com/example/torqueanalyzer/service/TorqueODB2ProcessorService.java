@@ -51,6 +51,7 @@ public class TorqueODB2ProcessorService {
                 Long time = allParams.get("time") != null ? Long.parseLong(allParams.get("time")) : System.currentTimeMillis();
 
                 TorqueTelemetry registro = new TorqueTelemetry(email, session, time, allParams);
+                log.debug("Cantidad de PID recibidos: {}", registro.getAllParameters().size());
                 bufferCola.add(registro);
 
                 log.debug("Registro encolado. Tamaño actual del buffer: {}", bufferCola.size());
