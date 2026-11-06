@@ -5,13 +5,13 @@ COPY . .
 # Compila y reempaqueta el módulo de forma limpia
 RUN mvn clean package -pl backend -am -DskipTests
 
-RUN echo "--- CONTENIDO DEL JAR ---" && jar tf /app/backend/target/torque-analyzer-1.0.0-SNAPSHOT.jar
+RUN echo "--- CONTENIDO DEL JAR ---" && jar tf /app/backend/target/torque-analyzer-1.0.0.jar
 
 FROM eclipse-temurin:21-jre
 WORKDIR /app
 
 # Copiamos el Fat JAR corregido que ahora contiene todo adentro
-COPY --from=build /app/backend/target/torque-analyzer-1.0.0-SNAPSHOT.jar backend-api.jar
+COPY --from=build /app/backend/target/torque-analyzer-1.0.0.jar backend-api.jar
 
 EXPOSE 8080
 
