@@ -1,0 +1,18 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        
+        {
+            "type": "java",
+            "name": "Spring Boot: Backend (Dev)",
+            "request": "launch",
+            "mainClass": "com.example.torqueanalyzer.TorqueAnalyzerApplication",
+            "projectName": "torque-analyzer",
+            //"vmArgs": "-Dspring.profiles.active=dev,offline",
+            "cwd": "${workspaceFolder}/backend",
+            "env": {
+                "SPRING_PROFILES_ACTIVE": "dev"
+            }
+        }
+    ]
+}

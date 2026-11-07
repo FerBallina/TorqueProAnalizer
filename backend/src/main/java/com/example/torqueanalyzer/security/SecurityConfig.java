@@ -40,7 +40,7 @@ public class SecurityConfig {
                 
                 .requestMatchers("/api/auth/login","/api/log/**").permitAll() 
                 
-                .requestMatchers("/api/admin/logs/**").hasRole("ADMIN") 
+                .requestMatchers("/api/admin/**").hasRole("ADMIN") 
                 
                 .anyRequest().authenticated()
             )

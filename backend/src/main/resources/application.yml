@@ -50,7 +50,6 @@ spring:
       max-request-size: 100MB
   datasource:
     url: jdbc:postgresql://dpg-dbml67bm8hqs73apg9m0-a.oregon-postgres.render.com/torqueanalyzerdb
-#    url: jdbc:postgresql://dpg-dbml67bm8hqs73apg9m0-a.oregon-postgres.rendero.com/torque
     username: ${DB_USER:db_user}
     password: ${DB_PASSWORD:db_pass}
     driver-class-name: org.postgresql.Driver

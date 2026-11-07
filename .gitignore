@@ -2,4 +2,4 @@ backend/target/
 frontend/target/
 frontend/node_modules/
 node_modules/
-launch.json
+notas.md

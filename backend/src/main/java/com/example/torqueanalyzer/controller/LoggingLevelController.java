@@ -2,6 +2,8 @@ package com.example.torqueanalyzer.controller;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.LoggerContext;
+import io.swagger.v3.oas.annotations.Operation;
+
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 public class LoggingLevelController {
 
     @PostMapping("/level")
+    @Operation(summary = "Change logger level", description = "cambier el nivel de log de clases")
     public String changeLogLevel(@RequestParam String packagePath, @RequestParam String level) {
         try {
             LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();

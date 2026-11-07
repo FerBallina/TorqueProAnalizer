@@ -32,7 +32,7 @@ public class AuthController {
         this.jwtService = jwtService;
     }
 
-    @Operation(summary = "User login", description = "Valida credenciales y devuelve un JWT")
+    @Operation(summary = "User token", description = "Valida credenciales y devuelve un Token JWT")
     @PostMapping("/login")
     @SecurityRequirements
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
