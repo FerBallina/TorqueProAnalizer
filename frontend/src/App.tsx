@@ -49,6 +49,14 @@ export default function App() {
     setSelectedSensors
   ] = useState<string[]>([]);
 
+  const [
+    selectedTelemetryPoint,
+    setSelectedTelemetryPoint
+  ] = useState<any>(null);
+  console.log(
+    "APP SELECTED",
+    selectedTelemetryPoint
+  );
   // Estados para el formulario de búsqueda histórica
   const [emailInput, setEmailInput] = useState<string>("");
   const [fromDate, setFromDate] = useState<string>("");
@@ -342,6 +350,9 @@ export default function App() {
               rpmField={log.config.rpmField}
               speedField={log.config.speedField}
               coolantField={log.config.coolantField}
+              latitudeField={log.config.latitudeField}
+              longitudeField={log.config.longitudeField}
+              onPointSelected={setSelectedTelemetryPoint}
             />
           </Paper>
 
@@ -370,6 +381,9 @@ export default function App() {
               }
               speedField={
                 log.config.speedField
+              }
+              selectedPoint={
+                selectedTelemetryPoint
               }
             />
           </Paper>

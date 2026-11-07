@@ -40,6 +40,13 @@ type Props = {
   speedField: string;
   coolantField: string;
 
+  latitudeField: string;
+  longitudeField: string;
+
+  onPointSelected?: (
+    point: any
+  ) => void;
+
   rpmScale?: AxisConfig;
   speedScale?: AxisConfig;
   coolantScale?: AxisConfig;
@@ -209,6 +216,12 @@ export default function RpmSpeedCoolantChart({
 
   coolantField,
 
+  latitudeField,
+
+  longitudeField,
+
+  onPointSelected,
+
   rpmScale,
 
   speedScale,
@@ -234,23 +247,35 @@ export default function RpmSpeedCoolantChart({
                         row.elapsedSeconds ?? 0
                     ),
 
-                originalTime:
-                    row[timeField],
+              originalTime:
+                  row[timeField],
 
-                rpm:
+              rpm:
+                  Number(
+                      row[rpmField] ?? 0
+                  ),
+
+              speed:
+                  Math.trunc(
                     Number(
-                        row[rpmField] ?? 0
-                    ),
+                      row[speedField] ?? 0
+                    ) * 3.6
+                  ),
 
-                speed:
-                    Math.trunc(Number(
-                        row[speedField] ?? 0
-                    )),
+              coolant:
+                  Number(
+                      row[coolantField] ?? 0
+                  ),
 
-                coolant:
-                    Number(
-                        row[coolantField] ?? 0
-                    )
+              latitude:
+                  Number(
+                      row[latitudeField]
+                  ),
+
+              longitude:
+                  Number(
+                      row[longitudeField]
+                  )
 
             })),
         [
@@ -346,8 +371,34 @@ export default function RpmSpeedCoolantChart({
       >
 
         <LineChart
-          data={chartData}
-        >
+              data={chartData}
+              onClick={(event: any) => {
+
+                    const index =
+                      Number(
+                        event?.activeTooltipIndex
+                      );
+
+                    if (
+                      Number.isNaN(index)
+                    ) {
+                      return;
+                    }
+
+                    const point =
+                      chartData[index];
+
+                    console.log(
+                      "POINT",
+                      point
+                    );
+
+                    onPointSelected?.(
+                      point
+                    );
+
+                  }}
+            >
 
           <CartesianGrid
             strokeDasharray="3 3"
@@ -509,15 +560,6 @@ export default function RpmSpeedCoolantChart({
             />
 
         </LineChart>
-
-        <Brush
-          dataKey="elapsedSeconds"
-          height={35}
-          stroke="#42a5f5"
-          tickFormatter={
-            formatElapsedTime
-          }
-        />
 
       </ResponsiveContainer>
     </>

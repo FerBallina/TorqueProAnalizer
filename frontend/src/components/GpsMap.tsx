@@ -4,6 +4,7 @@ import {
   Polyline,
   Marker,
   Popup,
+  CircleMarker,
   useMap
 } from "react-leaflet";
 
@@ -20,30 +21,73 @@ type Props = {
   latField: string;
   lonField: string;
   speedField: string;
+  selectedPoint?: any;
 };
 
-function FitBounds({
-  route
+function FocusSelectedPoint({
+  selectedPoint
 }: {
-  route: [number, number][];
+  selectedPoint: any;
 }) {
 
   const map = useMap();
 
   useEffect(() => {
 
-    if (route.length > 1) {
-
-      map.fitBounds(
-        route,
-        {
-          padding: [50, 50]
-        }
-      );
-
+    if (!selectedPoint) {
+      return;
     }
 
-  }, [map, route]);
+    map.flyTo(
+      [
+        selectedPoint.latitude,
+        selectedPoint.longitude
+      ],
+      15,
+      {
+        duration: 1
+      }
+    );
+
+  }, [map, selectedPoint]);
+
+  return null;
+}
+
+function FitBounds({
+  route,
+  selectedPoint
+}: {
+  route: [number, number][];
+  selectedPoint: any;
+})
+    
+    {
+
+  const map = useMap();
+
+useEffect(() => {
+
+  if (selectedPoint) {
+    return;
+  }
+
+  if (route.length > 1) {
+
+    map.fitBounds(
+      route,
+      {
+        padding: [50, 50]
+      }
+    );
+
+  }
+
+}, [
+  map,
+  route,
+  selectedPoint
+]);
 
   return null;
 
@@ -74,7 +118,8 @@ export default function GpsMap({
   data,
   latField,
   lonField,
-  speedField
+  speedField,
+  selectedPoint
 
 }: Props) {
 
@@ -142,7 +187,6 @@ export default function GpsMap({
     points[
       points.length - 1
     ];
-
   return (
     <>
 
@@ -157,7 +201,10 @@ export default function GpsMap({
           height: "600px"
         }}
       >
-
+          <FocusSelectedPoint
+            selectedPoint={selectedPoint}
+          />
+          
         <TileLayer
           attribution="© OpenStreetMap contributors"
           url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -165,6 +212,7 @@ export default function GpsMap({
 
         <FitBounds
           route={route}
+          selectedPoint={selectedPoint}
         />
 
         {
@@ -234,6 +282,61 @@ export default function GpsMap({
             Fin
           </Popup>
         </Marker>
+        {
+            selectedPoint && (
+
+              <CircleMarker
+                center={[
+                  selectedPoint.latitude,
+                  selectedPoint.longitude
+                ]}
+                radius={12}
+                pathOptions={{
+                  color: "#ffffff",
+                  fillColor: "#ff0000",
+                  fillOpacity: 1,
+                  weight: 3
+                }}
+              >
+
+                <Popup>
+
+                  <strong>
+                    Punto seleccionado
+                  </strong>
+
+                  <br />
+
+                  {selectedPoint.originalTime}
+
+                  <br />
+
+                  RPM:
+                  {" "}
+                  {selectedPoint.rpm}
+
+                  <br />
+
+                  Velocidad:
+                  {" "}
+                  {selectedPoint.speed}
+                  {" "}
+                  km/h
+
+                  <br />
+
+                  Coolant:
+                  {" "}
+                  {selectedPoint.coolant}
+                  {" "}
+                  °C
+
+                </Popup>
+
+              </CircleMarker>
+
+            )
+          }
 
       </MapContainer>
 

@@ -24,15 +24,16 @@ torque:
 
     Engine Coolant Temperature(°C):
       min: 70
-      max: 100
-      warningColor: yellow
-      dangerColor: red
+      warning: 100
+      danger: 120
 
     Engine RPM(rpm):
-      min: 0
-      max: 8000
-      warningColor: orange
-      dangerColor: red
+      warning: 8000
+      danger: 9000
+      
+    Turbo Boost & Vacuum Gauge(psi):
+      warning: 10,12
+      danger: 8,15
 
 #para no ver en swagger los schemas
 springdoc:
