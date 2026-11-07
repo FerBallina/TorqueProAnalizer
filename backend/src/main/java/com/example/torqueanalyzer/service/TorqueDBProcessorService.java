@@ -7,14 +7,13 @@ import com.example.torqueanalyzer.repository.TorqueTelemetryRepository.SessionPr
 
 import lombok.extern.slf4j.Slf4j;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -29,7 +28,8 @@ import java.util.Set;
 @Slf4j
 // 1. Vinculamos el prefijo de tu YAML de forma nativa
 @ConfigurationProperties(prefix = "torquelive") 
-public class TorqueDBProcessorService {
+@ConditionalOnProperty(name = "telemetry.odb2.enabled", havingValue = "true", matchIfMissing = true)
+public class TorqueDBProcessorService implements TorqueDBTelemetryService{
 
         private final TorqueTelemetryRepository repository;
 
@@ -61,12 +61,14 @@ public class TorqueDBProcessorService {
 
                 List<Map<String, Object>> records = new ArrayList<>();
 
+                log.debug("Cantidad de registros para ese session:{}",telemetrias.size());
+
                 for (TorqueTelemetry telemetria : telemetrias) {
                         Map<String, Object> record = new HashMap<>();
                         record.put("timestamp", telemetria.getDeviceTime());
 
                         Map<String, String> params = telemetria.getAllParameters();
-                        log.debug("Cantidad de PID encontrados:{}",params.size());
+                        log.debug("Cantidad de PID encontrados en el registro:{}",params.size());
 
                         if (params != null) {
                                 for (Map.Entry<String, String> entry : params.entrySet()) {

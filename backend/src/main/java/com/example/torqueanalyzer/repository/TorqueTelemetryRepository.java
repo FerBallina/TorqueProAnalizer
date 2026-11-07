@@ -1,6 +1,5 @@
 package com.example.torqueanalyzer.repository;
 
-import com.example.torqueanalyzer.dto.SessionHistoryDto;
 import com.example.torqueanalyzer.model.TorqueTelemetry;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

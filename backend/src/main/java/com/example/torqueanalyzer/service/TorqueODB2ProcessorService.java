@@ -5,8 +5,7 @@ import com.example.torqueanalyzer.repository.TorqueTelemetryRepository;
 
 import lombok.extern.slf4j.Slf4j;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,9 +31,9 @@ duracion de la cola de buffer es configurable mediante la propiedad "telemetria.
  */
 @Service
 @Slf4j
-public class TorqueODB2ProcessorService {
+@ConditionalOnProperty(name = "telemetry.odb2.enabled", havingValue = "true", matchIfMissing = true)
+public class TorqueODB2ProcessorService implements TorqueODB2TelemetryService{
 
-    //private static final Logger log = LoggerFactory.getLogger(TorqueODB2ProcessorService.class);
     private final TorqueTelemetryRepository repository;
 
     private final Queue<TorqueTelemetry> bufferCola = new ConcurrentLinkedQueue<>();

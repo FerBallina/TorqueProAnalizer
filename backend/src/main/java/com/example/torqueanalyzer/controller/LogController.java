@@ -3,8 +3,10 @@ package com.example.torqueanalyzer.controller;
 import com.example.torqueanalyzer.dto.SessionHistoryDto;
 import com.example.torqueanalyzer.dto.TorqueLogResponse;
 import com.example.torqueanalyzer.service.TorqueCSVProcessorService;
-import com.example.torqueanalyzer.service.TorqueDBProcessorService;
-import com.example.torqueanalyzer.service.TorqueODB2ProcessorService;
+//import com.example.torqueanalyzer.service.TorqueDBProcessorService;
+import com.example.torqueanalyzer.service.TorqueDBTelemetryService;
+//import com.example.torqueanalyzer.service.TorqueODB2ProcessorService;
+import com.example.torqueanalyzer.service.TorqueODB2TelemetryService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirements;
@@ -33,8 +35,10 @@ import org.springframework.web.multipart.MultipartFile;
 public class LogController {
 
     private final TorqueCSVProcessorService torqueCSVProcessorService;
-    private final TorqueODB2ProcessorService torqueODB2ProcessorService;
-    private final TorqueDBProcessorService torqueDBProcessorService;
+    //private final TorqueODB2ProcessorService torqueODB2ProcessorService;
+    private final TorqueODB2TelemetryService torqueODB2TelemetryService;
+    //private final TorqueDBProcessorService torqueDBProcessorService;
+    private final TorqueDBTelemetryService torqueDBTelemetryService;
 
     @Operation(summary = "Test Ping", description = "es para testear si el backend esta activo")
     @GetMapping(
@@ -53,7 +57,7 @@ public class LogController {
             @RequestParam("fromDate") String fromDate,
             @RequestParam("toDate") String toDate) {
             
-            return torqueDBProcessorService.getSessionHistory(email, fromDate, toDate);
+            return torqueDBTelemetryService.getSessionHistory(email, fromDate, toDate);
     }
 
     @Operation(summary = "Buscar data desde la DB", description = "Recibe data de un id y busca en la DB")
@@ -62,7 +66,7 @@ public class LogController {
     @SecurityRequirements
     public ResponseEntity<TorqueLogResponse> liveData(@RequestParam("id") String id) {
         System.out.println("liveData endpoint reached with id: " + id);
-        return torqueDBProcessorService.getData(id);
+        return torqueDBTelemetryService.getData(id);
     }
     
     @Operation(summary = "Upload CSV", description = "recibe la data de un file y la procesa")
@@ -83,7 +87,7 @@ public class LogController {
     @GetMapping("/log/torque-live")
     @SecurityRequirements
     public String recibirDataTiempoReal(@RequestParam Map<String, String> allParams) {
-        return torqueODB2ProcessorService.processRealTimeData(allParams);
+        return torqueODB2TelemetryService.processRealTimeData(allParams);
     }
 
 }

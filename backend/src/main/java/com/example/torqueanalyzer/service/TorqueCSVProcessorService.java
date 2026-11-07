@@ -129,6 +129,8 @@ public class TorqueCSVProcessorService {
                                 DEVICE_TIME_FORMATTER);
         }
 
+        //TODO revisar si no necesito agregar esto cuando traigo de la DB data
+        //metodo para devolver desde 0 el tiempo que transcurre y o usar la hora en el grafico de rpms/speed/coolant
         private void calculateElapsedSeconds(
                         TorqueLog torqueLog,
                         String deviceTimeField) {

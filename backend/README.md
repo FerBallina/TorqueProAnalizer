@@ -1,44 +1,4 @@
 # TorqueProAnalizer
-backend
-│
-├── pom.xml
-│
-├── src/main/java
-│   └── com/example/torqueanalyzer
-│
-│       ├── TorqueAnalyzerApplication.java
-│       │
-│       ├── config
-│       │   ├── TorqueProperties.java
-│       │   └── ThresholdConfig.java
-│       │
-│       ├── controller
-│       │   └── LogController.java
-│       │
-│       ├── dto
-│       │   ├── TorqueLogResponse.java
-│       │   ├── ChartResponse.java
-│       │   └── ColumnDefinition.java
-│       │
-│       ├── model
-│       │   ├── TorqueLog.java
-│       │   ├── TorqueRecord.java
-│       │   └── Threshold.java
-│       │
-│       ├── parser
-│       │   └── TorqueCsvParser.java
-│       │
-│       ├── service
-│       │   ├── TorqueLogService.java
-│       │   └── EventDetectionService.java
-│       │
-│       └── plugin
-│           └── AnalyzerPlugin.java
-│
-└── src/main/resources
-    └── application.yml
-
-
 
     POST /api/log/upload
 
@@ -54,8 +14,9 @@ backend
 
     http://localhost:8080/swagger-ui.html
 
-JSON de respuesta
 
+
+JSON de respuesta:
 {
   "config": {
     "rpmField": "Engine RPM(rpm)",
@@ -94,5 +55,17 @@ JSON de respuesta
 }
 
 
-formato torque:
+formato torque live:
 {"eml":"torquefer@yopmail.com", "v":"9", "session":"1793936866390", "id":"4ed0e83821ad6243950e3577e0e38dbf", "time":"1793937303846", "kff1005":"-58.43234390780593", "kff1006":"-34.61312503672552", "kff1001":"0.8132131361110169", "kff1007":"17.73611831665039"}
+
+
+insert en postgres para la primera vez (para cuando tengo ddl-auto: none en lugar de auto):
+CREATE TABLE IF NOT EXISTS torque_telemetry (
+    id BIGSERIAL PRIMARY KEY,
+    email VARCHAR(255),
+    session_id VARCHAR(255),
+    device_time BIGINT,
+    all_parameters JSONB
+);
+-- Un índice opcional para que tus búsquedas por email vuelen de rápido:
+CREATE INDEX IF NOT EXISTS idx_torque_telemetry_email ON torque_telemetry(email);

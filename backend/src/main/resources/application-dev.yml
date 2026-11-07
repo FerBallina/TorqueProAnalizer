@@ -1,3 +1,7 @@
+telemetry:
+  odb2:
+    enabled: true
+
 logging:
   level:
     com.example.torqueanalyzer.controller.LogController: DEBUG
@@ -9,3 +13,10 @@ app:
   swagger:
     server-url: https://bookish-telegram-xrrw5xj6wvpx3qw9-8080.app.github.dev
     
+#esto expone el logger de actuator y me permite incluso modificar el level, no dejarlo en prod
+#http://tu-app/actuator/loggers/class....
+management:
+  endpoints:
+    web:
+      exposure:
+        include: loggers
