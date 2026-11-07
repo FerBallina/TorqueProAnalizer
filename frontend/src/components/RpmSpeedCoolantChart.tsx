@@ -259,7 +259,7 @@ export default function RpmSpeedCoolantChart({
                   Math.trunc(
                     Number(
                       row[speedField] ?? 0
-                    ) * 3.6
+                    )
                   ),
 
               coolant:
